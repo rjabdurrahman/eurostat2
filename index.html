@@ -92,59 +92,12 @@
   <br>
   <div class="main-container">
     <div class="container">
-      <b>Select Country:</b>
-      <select id="countries" multiple="multiple">
-        <option value="EU" selected>European Union</option>
-        <option value="AT">Austria</option>
-        <option value="BE">Belgium</option>
-        <option value="BG">Bulgaria</option>
-        <option value="HR">Croatia</option>
-        <option value="CY">Cyprus</option>
-        <option value="CZ">Czechia</option>
-        <option value="DK">Denmark</option>
-        <option value="EE">Estonia</option>
-        <option value="FI">Finland</option>
-        <option value="FR">France</option>
-        <option value="DE">Germany</option>
-        <option value="EL">Greece</option>
-        <option value="HU">Hungary</option>
-        <option value="IE">Ireland</option>
-        <option value="IT">Italy</option>
-        <option value="LV">Latvia</option>
-        <option value="LU">Luxembourg</option>
-        <option value="MT">Malta</option>
-        <option value="NL">Netherlands</option>
-        <option value="NO">Norway</option>
-      </select>
+      <b>Select Countries:</b>
+      <input type="text" id="countries" placeholder="Select Counties" />
     </div>
-    <!-- <div class="container">
-      <b>Select Item:</b>
-      <select id="items" multiple="multiple">
-        <option value="CP00" selected>All-items HICP</option>
-        <option value="CP01131">Fresh or chilled fish</option>
-        <option value="CP01132">Frozen fish</option>
-        <option value="CP0111">Bread and cereals</option>
-        <option value="CP01111">Rice</option>
-        <option value="CP01112">Flours and other cereals</option>
-        <option value="CP01113">Bread</option>
-        <option value="CP01114">Other bakery products</option>
-        <option value="CP01115">Pizza and quiche</option>
-        <option value="CP01116">Pasta products and couscous</option>
-        <option value="CP01117">Breakfast cereals</option>
-        <option value="CP01118">Other cereal products</option>
-        <option value="CP0112">Meat</option>
-        <option value="CP01121">Beef and veal</option>
-        <option value="CP01122">Pork</option>
-        <option value="CP01123">Lamb and goat</option>
-        <option value="CP01124">Poultry</option>
-        <option value="CP01125">Other meats</option>
-        <option value="CP01126">Edible offal</option>
-        <option value="CP01127">Dried, salted or smoked meat</option>
-        <option value="CP01128">Other meat preparations</option>
-      </select>
-    </div> -->
     <div class="container">
-      <input style="width: 450px;" type="text" id="levelSelect" placeholder="Select items" autocomplete="off" />
+      <b>Select Items:</b>
+      <input style="width: 450px;" type="text" id="itemSelect" placeholder="Select items" autocomplete="off" />
     </div>
   </div>
   <div class="chart-container">
@@ -251,14 +204,13 @@
       return [Number(year), month - 1, 1];
     }
 
-
     function renderLegend2(ds) {
       $('#legend2').html('');
       for (let y = 0; y < query.filter.coicop.length; y++) {
         $('#legend2').append(`
         <li>
           <span>
-            <svg height="10" width="60" viewBox="0 10 60">
+            <svg height="10" width="60">
               <path fill="none" d="M 5 5 L 60 5" stroke="#8085e9" stroke-width="2" stroke-dasharray="${dashSvg[y]}"></path>
             </svg>
           </span>
@@ -342,112 +294,8 @@
         // console.log(chart.series.map(x => x.color))
       });
     };
-    let levelSelector = $('#levelSelect').comboTree({
-      source: [
-        {
-          id: '1',
-          title: 'Bread and cereals',
-          subs: [
-            {
-              id: 'CP0111',
-              title: 'CP0111 Bread and cereals'
-            },
-            {
-              id: 'CP01111',
-              title: 'CP01111 Rice'
-            },
-            {
-              id: 'CP01113',
-              title: 'CP01113 Bread'
-            },
-            {
-              id: 'CP01114',
-              title: 'CP01114 Other bakery products'
-            },
-            {
-              id: 'CP01115',
-              title: 'CP01115 Pizza and quiche'
-            },
-            {
-              id: 'CP01116',
-              title: 'CP01116 Pasta products and couscous'
-            },
-            {
-              id: 'CP01117',
-              title: 'CP01117 Breakfast cereals'
-            },
-            {
-              id: 'CP01118',
-              title: 'CP01118 Other cereal products'
-            }
-          ]
-        },
-        {
-          id: '2',
-          title: 'Meat',
-          subs: [
-            {
-              id: 'CP0112',
-              title: 'CP0112 Meat'
-            },
-            {
-              id: 'CP01121',
-              title: 'CP01121 Beef and veal'
-            },
-            {
-              id: 'CP01122',
-              title: 'CP01122 Pork'
-            },
-            {
-              id: 'CP01123',
-              title: 'CP01123 Lamb and goat'
-            },
-            {
-              id: 'CP01124',
-              title: 'CP01124 Poultry'
-            },
-            {
-              id: 'CP01125',
-              title: 'CP01125 Other meats'
-            },
-            {
-              id: 'CP01126',
-              title: 'CP01126 Edible offal'
-            },
-            {
-              id: 'CP01127',
-              title: 'CP01127 Dried, salted or smoked meat'
-            },
-            {
-              id: 'CP01128',
-              title: 'CP01128 Other meat preparations'
-            }
-          ]
-        },
-      ],
-      isMultiple: true,
-      cascadeSelect: false,
-      collapse: true,
-      selectableLastNode: true
-    });
-    levelSelector.setSelection(['CP0111'])
-    // EuroJSONstat.fetchDataset(query)
-    //   .then(ds => {
-    //     console.log(ds)
-    //     console.log(ds.Data({ geo: ds.Dimension("geo").id[0], coicop: 'CP01131' }, false))
-    //   })
-    $(document).ready(function () {
-      $('#countries').multiselect();
-      query.filter.geo = $('#countries').val() || [];
-      query.filter.coicop = levelSelector.getSelectedIds() || [];
-      if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
-    });
-    $('#levelSelect').add('#countries').change((e) => {
-      query.filter.geo = $('#countries').val() || [];
-      query.filter.coicop = levelSelector.getSelectedIds() || [];
-      if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
-    })
   </script>
+  <script src="index.js"></script>
 </body>
 
 </html>
