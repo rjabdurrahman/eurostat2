@@ -16,76 +16,7 @@
   <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css">
-  <style>
-    .main-container {
-      display: flex;
-      justify-content: flex-start;
-    }
-
-    .main-container .container {
-      width: max-content;
-    }
-
-    .container {
-      margin: 30px 0;
-      color: green;
-      font-size: 20px;
-    }
-
-    .chart-container {
-      display: flex;
-      gap: 20px;
-    }
-
-    .chart-container main {
-      width: calc(100% - 10px);
-      min-height: 400px;
-    }
-
-    .chart-container .legend {
-      width: 260px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 20px;
-    }
-
-
-    ul#legend1,
-    ul#legend2 {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin: 0;
-      padding: 0 15px 0;
-    }
-
-    ul#legend1 li,
-    ul#legend2 li {
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    ul#legend1 li span {
-      display: inline-block;
-      height: 14px;
-      width: 14px;
-      background-color: red;
-      border-radius: 50%;
-      transform: translateY(2px);
-    }
-
-    ul#legend1 li strong {
-      padding-left: 4px;
-    }
-
-    .highcharts-credits {
-      display: none;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -252,7 +183,7 @@
         }
       }
 
-      Highcharts.chart("chart", {
+      let chart = Highcharts.chart("chart", {
         title: { text: "Highcharts Demo" },
         subtitle: { text: "Source: " + ds.source },
         legend: {
@@ -286,13 +217,16 @@
         },
         plotOptions: {
           series: {
-            label: { connectorAllowed: false }
+            label: { connectorAllowed: false },
+            // events: {
+            //   mouseOver: function () {
+            //     console.log(this)
+            //   }
+            // }
           }
         },
         series: seriesList
-      }, function (chart) {
-        // console.log(chart.series.map(x => x.color))
-      });
+      }, addChartLengendHoverEffect);
     };
   </script>
   <script src="index.js"></script>
