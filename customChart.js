@@ -175,11 +175,20 @@ function createChart(ds) {
             shared: true,
             split: false,
             enabled: true,
-            // formatter: function (event) {
-            //     console.log(event)
-            //     console.log(event.chart)
-            //     return `<span>${Highcharts.dateFormat('%b %Y', new Date(this.x))}</span><br><i>${this.series.name}</i><br><strong>${this.y}</strong>`;
-            // }
+            useHTML: true,
+            padding: 0,
+            formatter: function () {
+                let seriesRow = this.points.map(p => `<tr>
+                <td><span style="background: ${p.series.color}"></span> ${p.series.name}</td>
+                <td>${p.y.toFixed(2)}</td>
+                </tr>`).join('')
+                return `<table class="tooltip-table">
+                    <tr>
+                    <th colspan="2">${Highcharts.dateFormat('%b %Y', new Date(this.x))}</th>
+                    </tr>
+                    ${seriesRow}
+                </table>`
+            }
         },
         plotOptions: {},
         series: seriesList
