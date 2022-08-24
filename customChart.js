@@ -139,6 +139,9 @@ function createChart(ds) {
     let chart = Highcharts.chart("chart", {
         title: { text: "Highcharts Demo" },
         subtitle: { text: "Source: " + ds.source },
+        chart: {
+            zoomType: 'x'
+        },
         legend: {
             enabled: false,
             layout: 'vertical',
@@ -149,7 +152,7 @@ function createChart(ds) {
         },
         xAxis: {
             type: 'datetime',
-            tickInterval: 10*24*60*60,
+            tickInterval: 10 * 24 * 60 * 60,
             dateTimeLabelFormats: {
                 millisecond: myDateFormat,
                 second: myDateFormat,
@@ -159,34 +162,26 @@ function createChart(ds) {
                 week: myDateFormat,
                 month: myDateFormat,
                 year: myDateFormat
+            },
+            crosshair: {
+                snap: true
             }
         },
         yAxis: {
             title: { text: "Index, 2015=100" }
         },
         tooltip: {
-            formatter: function (event) {
-                console.log(event)
-                console.log(event.chart)
-                return `<span>${Highcharts.dateFormat('%b %Y', new Date(this.x))}</span><br><i>${this.series.name}</i><br><strong>${this.y}</strong>`;
-            }
+            xDateFormat: '%b \ %Y',
+            shared: true,
+            split: false,
+            enabled: true,
+            // formatter: function (event) {
+            //     console.log(event)
+            //     console.log(event.chart)
+            //     return `<span>${Highcharts.dateFormat('%b %Y', new Date(this.x))}</span><br><i>${this.series.name}</i><br><strong>${this.y}</strong>`;
+            // }
         },
-        plotOptions: {
-            series: {
-                label: { connectorAllowed: false },
-                point: {
-                    events: {
-                        // mouseOver: function (e) {
-                        //     console.log(this.category)
-                        //     for (let sd of this.series.chart.series.map(x => x.data)) {
-                        //         // console.log(sd.find(x => x.category === this.category).y)
-                        //         console.log(sd.find(x => x.category === this.category))
-                        //     }
-                        // }
-                    }
-                }
-            }
-        },
+        plotOptions: {},
         series: seriesList
     }, function (chart) {
         updateRange(chart, JSON.parse(JSON.stringify(seriesList)));
