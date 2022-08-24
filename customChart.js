@@ -200,27 +200,27 @@ function createChart(ds) {
 
 function addChartLengendHoverEffect(chart) {
     $('#legend1 li').add('#legend2 li').on('mouseenter', (e) => {
-        console.log('Called')
         chart.series.forEach(s => {
             let targetItem = e.target.textContent.trim();
             if (s.name.includes(targetItem)) {
                 s.update({
                     opacity: 1
-                })
+                }, false)
             } else {
                 s.update({
                     opacity: 0.15
-                })
+                }, false)
             }
         })
-        console.log('Done')
+        chart.redraw();
     })
     
     $('#legend1 li').add('#legend2 li').on('mouseleave', (e) => {
         chart.series.forEach(s => {
             s.update({
                 opacity: 1
-            })
+            }, false)
         })
+        chart.redraw();
     })
 }

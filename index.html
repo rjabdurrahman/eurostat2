@@ -82,13 +82,17 @@
           + ' '
           + new Date(Number(values[1])).getFullYear()
         )
+      })
+
+      slider.noUiSlider.on('change', function (values, handle) {
         let newSeries = JSON.parse(JSON.stringify(seriesData))
         console.log(newSeries)
         for (let idx in newSeries) {
           chart.series[idx].update({
             data: newSeries[idx].data.filter(x => x[0] >= Number(values[0]) && x[0] <= Number(values[1]))
-          })
+          }, false)
         }
+        chart.redraw();
       });
     }
     $('#slider').width(
