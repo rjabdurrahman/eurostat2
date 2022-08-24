@@ -52,11 +52,14 @@
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://cdn.jsdelivr.net/combine/npm/jsonstat-toolkit@1.3.2,npm/jsonstat-euro@1.1.2"></script>
   <script>
+    let slider;
     function updateRange(chart, seriesData) {
+      if (slider && slider.noUiSlider) {
+        slider.noUiSlider.destroy();
+      }
       let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       let dateNumbers = seriesList[0].data.map(x => x[0])
-
-      let slider = document.getElementById('slider');
+      slider = document.getElementById('slider');
       noUiSlider.create(slider, {
         start: [Math.min(...dateNumbers), Math.max(...dateNumbers)],
         connect: true,
@@ -66,7 +69,8 @@
           'min': Math.min(...dateNumbers),
           'max': Math.max(...dateNumbers)
         }
-      });
+      }, true);
+
       slider.noUiSlider.on('update', function (values, handle) {
         $('.noUi-tooltip').eq(0).text(
           monthNames[new Date(Number(values[0])).getMonth()]
@@ -79,6 +83,7 @@
           + new Date(Number(values[1])).getFullYear()
         )
         let newSeries = JSON.parse(JSON.stringify(seriesData))
+        console.log(newSeries)
         for (let idx in newSeries) {
           chart.series[idx].update({
             data: newSeries[idx].data.filter(x => x[0] >= Number(values[0]) && x[0] <= Number(values[1]))
@@ -97,7 +102,6 @@
   </script>
   <script src="customChart.js"></script>
   <script src="index.js"></script>
-
 </body>
 
 </html>

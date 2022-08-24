@@ -134,28 +134,3 @@ $('#itemSelect').add('#countries').change((e) => {
     query.filter.coicop = itemSelector.getSelectedIds() || [];
     if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
 })
-
-function addChartLengendHoverEffect(chart) {
-    $('#legend1 li').add('#legend2 li').mouseenter((e) => {
-        chart.series.forEach(s => {
-            let targetItem = e.target.textContent.trim();
-            if (s.name.includes(targetItem)) {
-                s.update({
-                    opacity: 1
-                })
-            } else {
-                s.update({
-                    opacity: 0.15
-                })
-            }
-        })
-    })
-    
-    $('#legend1 li').add('#legend2 li').mouseleave((e) => {
-        chart.series.forEach(s => {
-            s.update({
-                opacity: 1
-            })
-        })
-    })
-}

@@ -193,7 +193,34 @@ function createChart(ds) {
         plotOptions: {},
         series: seriesList
     }, function (chart) {
-        updateRange(chart, JSON.parse(JSON.stringify(seriesList)));
         addChartLengendHoverEffect(chart);
+        updateRange(chart, JSON.parse(JSON.stringify(seriesList)));
     });
 };
+
+function addChartLengendHoverEffect(chart) {
+    $('#legend1 li').add('#legend2 li').on('mouseenter', (e) => {
+        console.log('Called')
+        chart.series.forEach(s => {
+            let targetItem = e.target.textContent.trim();
+            if (s.name.includes(targetItem)) {
+                s.update({
+                    opacity: 1
+                })
+            } else {
+                s.update({
+                    opacity: 0.15
+                })
+            }
+        })
+        console.log('Done')
+    })
+    
+    $('#legend1 li').add('#legend2 li').on('mouseleave', (e) => {
+        chart.series.forEach(s => {
+            s.update({
+                opacity: 1
+            })
+        })
+    })
+}
