@@ -84,7 +84,7 @@ let query = {
 
 function dateMonthStrParser(str) {
     let [year, month] = str.split('M');
-    return [Number(year), month - 1, 2];
+    return [Number(year), month - 1, 1];
 }
 
 function renderLegend2(ds) {
@@ -135,8 +135,11 @@ function createChart(ds) {
             })
         }
     }
+    var existingSliderValues = _.get(slider, 'noUiSlider') && slider.noUiSlider.get().map(x => Number(x));
+    createSlider(JSON.parse(JSON.stringify(seriesList)))
+    _.get(slider, 'noUiSlider') && slider.noUiSlider.set(existingSliderValues)
 
-    let chart = Highcharts.chart("chart", {
+    Highcharts.chart("chart", {
         title: { text: "Highcharts Demo" },
         subtitle: { text: "Source: " + ds.source },
         chart: {
@@ -194,7 +197,7 @@ function createChart(ds) {
         series: seriesList
     }, function (chart) {
         addChartLengendHoverEffect(chart);
-        updateRange(chart, JSON.parse(JSON.stringify(seriesList)));
+        updateRange(chart, JSON.parse(JSON.stringify(seriesList)), existingSliderValues);
     });
 };
 
@@ -214,7 +217,7 @@ function addChartLengendHoverEffect(chart) {
         })
         chart.redraw();
     })
-    
+
     $('#legend1 li').add('#legend2 li').on('mouseleave', (e) => {
         chart.series.forEach(s => {
             s.update({

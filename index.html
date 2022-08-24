@@ -13,6 +13,9 @@
   <link rel="stylesheet" href="https://code.highcharts.com/css/highcharts.css">
   <link rel="stylesheet" href="combo.css">
   <script src="comboTreePlugin.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"
+    integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css">
@@ -52,13 +55,13 @@
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://cdn.jsdelivr.net/combine/npm/jsonstat-toolkit@1.3.2,npm/jsonstat-euro@1.1.2"></script>
   <script>
-    let slider;
-    function updateRange(chart, seriesData) {
+    var slider;
+    let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    function createSlider(seriesData) {
+      let dateNumbers = seriesList[0].data.map(x => x[0])
       if (slider && slider.noUiSlider) {
         slider.noUiSlider.destroy();
       }
-      let monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      let dateNumbers = seriesList[0].data.map(x => x[0])
       slider = document.getElementById('slider');
       noUiSlider.create(slider, {
         start: [Math.min(...dateNumbers), Math.max(...dateNumbers)],
@@ -70,7 +73,8 @@
           'max': Math.max(...dateNumbers)
         }
       }, true);
-
+    }
+    function updateRange(chart, seriesData, existingValues) {
       slider.noUiSlider.on('update', function (values, handle) {
         $('.noUi-tooltip').eq(0).text(
           monthNames[new Date(Number(values[0])).getMonth()]
@@ -82,11 +86,19 @@
           + ' '
           + new Date(Number(values[1])).getFullYear()
         )
+        if (existingValues && existingValues.length) {
+          let newSeries = JSON.parse(JSON.stringify(seriesData))
+          for (let idx in newSeries) {
+            chart.series[idx].update({
+              data: newSeries[idx].data.filter(x => x[0] >= existingValues[0] && x[0] <= existingValues[1])
+            }, false)
+          }
+          chart.redraw();
+        }
       })
 
       slider.noUiSlider.on('change', function (values, handle) {
         let newSeries = JSON.parse(JSON.stringify(seriesData))
-        console.log(newSeries)
         for (let idx in newSeries) {
           chart.series[idx].update({
             data: newSeries[idx].data.filter(x => x[0] >= Number(values[0]) && x[0] <= Number(values[1]))
