@@ -84,7 +84,7 @@ let query = {
 
 function dateMonthStrParser(str) {
     let [year, month] = str.split('M');
-    return [Number(year), month - 1, 1];
+    return [Number(year), month - 1, 2];
 }
 
 function renderLegend2(ds) {
@@ -152,7 +152,7 @@ function createChart(ds) {
         },
         xAxis: {
             type: 'datetime',
-            tickInterval: 10 * 24 * 60 * 60,
+            tickInterval: 30 * 24 * 3600 * 1000,
             dateTimeLabelFormats: {
                 millisecond: myDateFormat,
                 second: myDateFormat,
