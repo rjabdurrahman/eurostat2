@@ -90,7 +90,7 @@ function dateMonthStrParser(str) {
 function renderLegend2(ds) {
     $('#legend2').html('');
     for (let y = 0; y < query.filter.coicop.length; y++) {
-        if(ds.Dimension('coicop').Category(y)) $('#legend2').append(`
+        if (ds.Dimension('coicop').Category(y)) $('#legend2').append(`
         <li>
           <span>
             <svg height="10" width="60">
@@ -103,6 +103,8 @@ function renderLegend2(ds) {
 }
 
 var seriesList = [];
+var hChart;
+var existingSliderValues;
 function createChart(ds) {
     const start = ds.Dimension("time").Category(0).index;
     const geo = ds.Dimension("geo");
@@ -134,11 +136,18 @@ function createChart(ds) {
             })
         }
     }
-    var existingSliderValues = _.get(slider, 'noUiSlider') && slider.noUiSlider.get().map(x => Number(x));
+    existingSliderValues = _.get(slider, 'noUiSlider') && slider.noUiSlider.get().map(x => Number(x));
     createSlider(JSON.parse(JSON.stringify(seriesList)))
     _.get(slider, 'noUiSlider') && slider.noUiSlider.set(existingSliderValues)
-
-    Highcharts.chart("chart", {
+    if (hChart) {
+        for(let i = hChart.series.length - 1; i >= 0; i--) {
+            hChart.series[i].remove(false);
+        }
+        seriesList.forEach(s => hChart.addSeries(s));
+        addChartLengendHoverEffect(hChart);
+        updateRange(hChart, JSON.parse(JSON.stringify(seriesList)), existingSliderValues);
+    }
+    else hChart = Highcharts.chart("chart", {
         title: { text: "Highcharts Demo" },
         subtitle: { text: "Source: " + ds.source },
         chart: {
@@ -181,15 +190,15 @@ function createChart(ds) {
             padding: 0,
             formatter: function () {
                 let seriesRow = this.points.map(p => `<tr>
-                <td><span style="background: ${p.series.color}"></span> ${p.series.name}</td>
-                <td>${p.y.toFixed(2)}</td>
-                </tr>`).join('')
+                    <td><span style="background: ${p.series.color}"></span> ${p.series.name}</td>
+                    <td>${p.y.toFixed(2)}</td>
+                    </tr>`).join('')
                 return `<table class="tooltip-table">
-                    <tr>
-                    <th colspan="2">${Highcharts.dateFormat('%b %Y', new Date(this.x))}</th>
-                    </tr>
-                    ${seriesRow}
-                </table>`
+                        <tr>
+                        <th colspan="2">${Highcharts.dateFormat('%b %Y', new Date(this.x))}</th>
+                        </tr>
+                        ${seriesRow}
+                    </table>`
             }
         },
         plotOptions: {},

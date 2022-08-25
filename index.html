@@ -104,7 +104,7 @@
             data: newSeries[idx].data.filter(x => x[0] >= Number(values[0]) && x[0] <= Number(values[1]))
           }, false)
         }
-        chart.redraw();
+        chart.redraw(false);
       });
     }
     $('#slider').width(
