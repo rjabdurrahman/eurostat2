@@ -90,7 +90,7 @@ function dateMonthStrParser(str) {
 function renderLegend2(ds) {
     $('#legend2').html('');
     for (let y = 0; y < query.filter.coicop.length; y++) {
-        $('#legend2').append(`
+        if(ds.Dimension('coicop').Category(y)) $('#legend2').append(`
         <li>
           <span>
             <svg height="10" width="60">
@@ -111,7 +111,7 @@ function createChart(ds) {
 
     $('#legend1').html('');
     for (let x = 0; x < query.filter.geo.length; x++) {
-        $('#legend1').append(`
+        if (geo.Category(x)) $('#legend1').append(`
         <li>
           <span style="background-color: ${colors[x]}"></span>
           <strong>${geo.Category(x).label.includes('European Union') ? 'European Union' : geo.Category(x).label}</strong>
@@ -121,8 +121,7 @@ function createChart(ds) {
 
     for (let x = 0; x < query.filter.geo.length; x++) {
         for (let y = 0; y < query.filter.coicop.length; y++) {
-            // console.log(geo.Category(x).label.includes('European Union'), query.filter.geo[x], query.filter.coicop[y], dashTypes[y])
-            seriesList.push({
+            if (geo.Category(x)) seriesList.push({
                 name: `${geo.Category(x).label.includes('European Union') ? 'European Union' : geo.Category(x).label} (${ds.Dimension('coicop').Category(y).label})`,
                 data: ds.Data({ geo: query.filter.geo[x], coicop: query.filter.coicop[y] }, false).map(
                     (val, ix) => [
