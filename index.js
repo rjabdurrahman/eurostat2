@@ -124,7 +124,6 @@ $('input.multiplesFilter').get(0).style.display = 'none';
 //     console.log(ds.Data({ geo: ds.Dimension("geo").id[0], coicop: 'CP01131' }, false))
 //   })
 $(document).ready(function () {
-    // $('#countries').multiselect();
     query.filter.geo = countrySelector.getSelectedIds() || [];
     query.filter.coicop = itemSelector.getSelectedIds() || [];
     if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
@@ -132,18 +131,36 @@ $(document).ready(function () {
 $('#itemSelect').add('#countries').change((e) => {
     let selectedCountry = _.difference(countrySelector.getSelectedIds(), query.filter.geo);
     let deselectedCountry = _.difference(query.filter.geo, countrySelector.getSelectedIds());
-    let selectedItem = _.difference(itemSelector.getSelectedIds(), query.filter.coicop);
-    let deselectedItem = _.difference(query.filter.coicop, itemSelector.getSelectedIds());
-    console.log(selectedItem, deselectedItem)
-    if(deselectedCountry.length || deselectedItem.length) {
+    let selectedItems = _.difference(itemSelector.getSelectedIds(), query.filter.coicop);
+    let deselectedItems = _.difference(query.filter.coicop, itemSelector.getSelectedIds());
+    if(deselectedCountry.length || deselectedItems.length) {
         hChart.series
-        .filter(x => x.options.id.includes(deselectedCountry[0] || deselectedItem[0]))
+        .filter(x => x.options.id.includes(deselectedCountry[0] || deselectedItems[0]))
         .forEach(s => s.remove())
-        query.filter.geo = countrySelector.getSelectedIds() || [];
-        query.filter.coicop = itemSelector.getSelectedIds() || [];
-        return;
+    }
+    if(selectedCountry.length) {
+        console.log(selectedCountry, query.filter.coicop)
+        EuroJSONstat.fetchDataset({
+            dataset: "prc_hicp_midx",
+            filter: {
+                geo: selectedCountry,
+                unit: ["I15"],
+                coicop: query.filter.coicop
+            }
+        }).then(ds => console.log('Append Series'))
+    }
+    if(selectedItems.length) {
+        console.log(query.filter.geo, selectedItems)
+        EuroJSONstat.fetchDataset({
+            dataset: "prc_hicp_midx",
+            filter: {
+                geo: query.filter.geo,
+                unit: ["I15"],
+                coicop: selectedItems
+            }
+        }).then(ds => console.log('Append Series'))
     }
     query.filter.geo = countrySelector.getSelectedIds() || [];
     query.filter.coicop = itemSelector.getSelectedIds() || [];
-    if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
+    // if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
 })
