@@ -124,6 +124,7 @@ function createChart(ds) {
     for (let x = 0; x < query.filter.geo.length; x++) {
         for (let y = 0; y < query.filter.coicop.length; y++) {
             if (geo.Category(x)) seriesList.push({
+                id: `${query.filter.geo[x]}**${query.filter.coicop[y]}`,
                 name: `${geo.Category(x).label.includes('European Union') ? 'European Union' : geo.Category(x).label} (${ds.Dimension('coicop').Category(y).label})`,
                 data: ds.Data({ geo: query.filter.geo[x], coicop: query.filter.coicop[y] }, false).map(
                     (val, ix) => [

@@ -130,6 +130,19 @@ $(document).ready(function () {
     if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
 });
 $('#itemSelect').add('#countries').change((e) => {
+    let selectedCountry = _.difference(countrySelector.getSelectedIds(), query.filter.geo);
+    let deselectedCountry = _.difference(query.filter.geo, countrySelector.getSelectedIds());
+    let selectedItem = _.difference(itemSelector.getSelectedIds(), query.filter.coicop);
+    let deselectedItem = _.difference(query.filter.coicop, itemSelector.getSelectedIds());
+    console.log(selectedItem, deselectedItem)
+    if(deselectedCountry.length || deselectedItem.length) {
+        hChart.series
+        .filter(x => x.options.id.includes(deselectedCountry[0] || deselectedItem[0]))
+        .forEach(s => s.remove())
+        query.filter.geo = countrySelector.getSelectedIds() || [];
+        query.filter.coicop = itemSelector.getSelectedIds() || [];
+        return;
+    }
     query.filter.geo = countrySelector.getSelectedIds() || [];
     query.filter.coicop = itemSelector.getSelectedIds() || [];
     if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
