@@ -47,7 +47,7 @@ ul#legend2 li {
     display    : flex;
     align-items: center;
     gap        : 10px;
-    cursor: pointer;
+    cursor     : pointer;
 }
 
 ul#legend1 li span {
@@ -67,52 +67,65 @@ ul#legend1 li strong {
     display: none;
 }
 
-ul#legend1 li *{
+ul#legend1 li * {
     pointer-events: none;
 }
 
-ul#legend2 li *{
+ul#legend2 li * {
     pointer-events: none;
 }
 
 #slider {
-    margin-top: 50px;
+    margin-top : 50px;
     margin-left: 60px;
-    /* width: calc(1046px - 65px); */
+    /* width   : calc(1046px - 65px); */
 }
 
 .tooltip-table {
-    width: max-content;
+    width          : max-content;
     border-collapse: collapse;
 }
 
 .tooltip-table tr th {
     background-color: #7cb5ec;
-    color: white;
+    color           : white;
 }
 
 .tooltip-table tr td:nth-of-type(2) {
     font-weight: bold;
-    text-align: right;
+    text-align : right;
 }
 
-.tooltip-table tr th:nth-of-type(1), .tooltip-table tr td:nth-of-type(1) {
+.tooltip-table tr th:nth-of-type(1),
+.tooltip-table tr td:nth-of-type(1) {
     padding-left: 2px;
 }
 
 .tooltip-table tr td:nth-of-type(2) {
-    padding-left: 2px;
+    padding-left : 2px;
     padding-right: 2px;
 }
 
-.tooltip-table th, .tooltip-table td{
+.tooltip-table th,
+.tooltip-table td {
     font-size: 12px;
-    border: 1px solid #7cb5ec;
+    border   : 1px solid #7cb5ec;
 }
 
 .tooltip-table tr td span {
-    height: 10px;
-    width: 10px;
-    display: inline-block;
+    height       : 10px;
+    width        : 10px;
+    display      : inline-block;
     border-radius: 50%;
+}
+
+#loading {
+    width: 0;
+    margin-bottom: 10px;
+    height            : 2px;
+    margin-left       : 40px;
+    background-color  : #7cb5ec;
+    box-shadow        : 0px 1px 15px 0px #7cb5ec;
+    -webkit-box-shadow: 0px 1px 15px 0px #7cb5ec;
+    -moz-box-shadow   : 0px 1px 15px 0px #7cb5ec;
 }

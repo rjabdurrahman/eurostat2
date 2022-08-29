@@ -148,6 +148,7 @@ $('#itemSelect').add('#countries').change((e) => {
         })
     }
     if (selectedCountry.length) {
+        startLoading();
         EuroJSONstat.fetchDataset({
             dataset: "prc_hicp_midx",
             filter: {
@@ -156,10 +157,12 @@ $('#itemSelect').add('#countries').change((e) => {
                 coicop: query.filter.coicop
             }
         }).then((ds) => {
+            endLoading();
             appendSeries(ds, selectedCountry, query.filter.coicop, 'country')
         })
     }
     if (selectedItems.length) {
+        startLoading();
         EuroJSONstat.fetchDataset({
             dataset: "prc_hicp_midx",
             filter: {
@@ -168,6 +171,7 @@ $('#itemSelect').add('#countries').change((e) => {
                 coicop: selectedItems
             }
         }).then((ds) => {
+            endLoading();
             appendSeries(ds, query.filter.geo, selectedItems, 'item')
         })
     }
@@ -222,5 +226,6 @@ function appendSeries(ds, countries, items, trigger) {
     trigger === 'item' && renderItemLegends();
     addChartLengendHoverEffect(hChart);
     let existingSliderValues = _.get(slider, 'noUiSlider') && slider.noUiSlider.get().map(x => Number(x));
-    updateSliderRange(hChart, JSON.parse(JSON.stringify(seriesList)), existingSliderValues);
+    console.log(hChart.series.map(x => x.options.id), seriesList.map(x => x.id))
+    // updateSliderRange(hChart, existingSliderValues);
 }

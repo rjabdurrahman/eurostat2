@@ -17,7 +17,7 @@ function createSlider() {
         }
     }, true);
 }
-function updateSliderRange(chart, seriesData, existingValues) {
+function updateSliderRange(chart, existingValues) {
     slider.noUiSlider.on('update', function (values, handle) {
         $('.noUi-tooltip').eq(0).text(
             monthNames[new Date(Number(values[0])).getMonth()]
@@ -29,8 +29,10 @@ function updateSliderRange(chart, seriesData, existingValues) {
             + ' '
             + new Date(Number(values[1])).getFullYear()
         )
+        console.log('Here')
         if (existingValues && existingValues.length) {
-            let newSeries = JSON.parse(JSON.stringify(seriesData))
+            let newSeries = JSON.parse(JSON.stringify(seriesList))
+            // console.log(chart.series.map(x => x.options.id))
             for (let idx in newSeries) {
                 chart.series[idx].update({
                     data: newSeries[idx].data.filter(x => x[0] >= existingValues[0] && x[0] <= existingValues[1])
@@ -41,7 +43,7 @@ function updateSliderRange(chart, seriesData, existingValues) {
     })
 
     slider.noUiSlider.on('change', function (values, handle) {
-        let newSeries = JSON.parse(JSON.stringify(seriesData))
+        let newSeries = JSON.parse(JSON.stringify(seriesList))
         for (let idx in newSeries) {
             chart.series[idx].update({
                 data: newSeries[idx].data.filter(x => x[0] >= Number(values[0]) && x[0] <= Number(values[1]))
@@ -58,3 +60,15 @@ addEventListener('resize', (event) => {
         $('#chart').width() - 65
     )
 });
+
+function startLoading() {
+    $('#loading').animate({
+        width: $('#chart').width() + 'px'
+    }, 600)
+}
+
+function endLoading() {
+    $('#loading').animate({
+        width: '0px'
+    }, 0)
+}

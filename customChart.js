@@ -176,7 +176,7 @@ function createChart(ds) {
     }, function (chart) {
         addChartLengendHoverEffect(chart);
         createSlider();
-        updateSliderRange(chart, JSON.parse(JSON.stringify(seriesList)), null);
+        updateSliderRange(chart, null);
     });
 };
 
