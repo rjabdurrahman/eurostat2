@@ -133,13 +133,12 @@ $('#itemSelect').add('#countries').change((e) => {
     let deselectedCountry = _.difference(query.filter.geo, countrySelector.getSelectedIds());
     let selectedItems = _.difference(itemSelector.getSelectedIds(), query.filter.coicop);
     let deselectedItems = _.difference(query.filter.coicop, itemSelector.getSelectedIds());
-    if(deselectedCountry.length || deselectedItems.length) {
+    if (deselectedCountry.length || deselectedItems.length) {
         hChart.series
-        .filter(x => x.options.id.includes(deselectedCountry[0] || deselectedItems[0]))
-        .forEach(s => s.remove())
+            .filter(x => x.options.id.includes(deselectedCountry[0] || deselectedItems[0]))
+            .forEach(s => s.remove())
     }
-    if(selectedCountry.length) {
-        console.log(selectedCountry, query.filter.coicop)
+    if (selectedCountry.length) {
         EuroJSONstat.fetchDataset({
             dataset: "prc_hicp_midx",
             filter: {
@@ -147,10 +146,11 @@ $('#itemSelect').add('#countries').change((e) => {
                 unit: ["I15"],
                 coicop: query.filter.coicop
             }
-        }).then(ds => console.log('Append Series'))
+        }).then((ds) => {
+            appendSeries(ds, selectedCountry, query.filter.coicop, 'country')
+        })
     }
-    if(selectedItems.length) {
-        console.log(query.filter.geo, selectedItems)
+    if (selectedItems.length) {
         EuroJSONstat.fetchDataset({
             dataset: "prc_hicp_midx",
             filter: {
@@ -158,9 +158,36 @@ $('#itemSelect').add('#countries').change((e) => {
                 unit: ["I15"],
                 coicop: selectedItems
             }
-        }).then(ds => console.log('Append Series'))
+        }).then((ds) => {
+            appendSeries(ds, query.filter.geo, selectedItems, 'item')
+        })
     }
     query.filter.geo = countrySelector.getSelectedIds() || [];
     query.filter.coicop = itemSelector.getSelectedIds() || [];
     // if (query.filter.geo.length && query.filter.coicop.length) EuroJSONstat.fetchDataset(query).then(createChart);
 })
+
+
+function appendSeries(ds, countries, items, trigger) {
+    let geo = ds.Dimension('geo');
+    let coicop = ds.Dimension('coicop');
+    for (let x = 0; x < countries.length; x++) {
+        for (let y = 0; y < items.length; y++) {
+            if (geo.Category(x)) hChart.addSeries({
+                id: `${countries[x]}**${items[y]}`,
+                name: `${geo.Category(x).label.includes('European Union') ? 'European Union' : geo.Category(x).label} (${coicop.Category(y).label})`,
+                data: ds.Data({ geo: countries[x], coicop: items[y] }, false).map(
+                    (val, ix) => [
+                        new Date(...dateMonthStrParser(ds.Dimension("time").id[ix])).getTime(),
+                        val
+                    ]
+                ).filter(x => Boolean(x[1])),
+                dashStyle: trigger === 'item' ? dashTypes[itemLegends.length + y] : _.find(itemLegends, { id: ds.Dimension('coicop').id[y] }).dashType,
+                color: trigger === 'country' ? colors[countryLegends.length + x] : _.find(countryLegends, { id: ds.Dimension('geo').id[x] }).color,
+            })
+        }
+    }
+    trigger === 'country' && renderCountryLengends(ds);
+    trigger === 'item' && renderItemLegends(ds);
+    addChartLengendHoverEffect(hChart);
+}

@@ -87,19 +87,47 @@ function dateMonthStrParser(str) {
     return [Number(year), month - 1, 1];
 }
 
-function renderLegend2(ds) {
-    $('#legend2').html('');
-    for (let y = 0; y < query.filter.coicop.length; y++) {
-        if (ds.Dimension('coicop').Category(y)) $('#legend2').append(`
-        <li>
-          <span>
-            <svg height="10" width="60">
-              <path fill="none" d="M 5 5 L 60 5" stroke="#8085e9" stroke-width="2" stroke-dasharray="${dashSvg[y]}"></path>
-            </svg>
-          </span>
-          <strong>${ds.Dimension('coicop').Category(y).label}</strong>
-        </li>`);
+var countryLegends = [];
+var itemLegends = [];
+
+function renderCountryLengends(ds) {
+    let label;
+    for (let x = 0; x < ds.Dimension('geo').id.length; x++) {
+        label = ds.Dimension('geo').Category(x).label.includes('European Union') ? 'European Union' : ds.Dimension('geo').Category(x).label;
+        if (ds.Dimension('geo').Category(x) && !_.find(countryLegends, { label })) countryLegends.push({
+            id: ds.Dimension('geo').id[x],
+            color: _.find(countryLegends, { id: ds.Dimension('geo').id[x] })?.color || colors[countryLegends.length + x],
+            label,
+        })
     }
+    $('#legend1').html(
+        countryLegends.map(x => `<li>
+        <span style="background-color: ${x.color}"></span>
+        <strong>${x.label}</strong>
+      </li>`).join('')
+    );
+}
+
+function renderItemLegends(ds) {
+    for (let y = 0; y < ds.Dimension('coicop').id.length; y++) {
+        let label = ds.Dimension('coicop').Category(y).label;
+        if (ds.Dimension('coicop').Category(y) && !_.find(itemLegends, { label })) itemLegends.push({
+            id: ds.Dimension('coicop').id[y],
+            label,
+            dashType: _.find(itemLegends, { id: ds.Dimension('coicop').id[y] })?.dashType || dashTypes[itemLegends.length + y],
+            dashSvg: _.find(itemLegends, { id: ds.Dimension('coicop').id[y] })?.dashSvg || dashSvg[itemLegends.length + y]
+        })
+    }
+    $('#legend2').html(
+        itemLegends.map(x => `<li>
+            <span>
+            <svg height="10" width="60">
+                <path fill="none" d="M 5 5 L 60 5" stroke="#8085e9" stroke-width="2" stroke-dasharray="${x.dashSvg}"></path>
+            </svg>
+            </span>
+            <strong>${x.label}</strong>
+        </li>`).join('')
+    );
 }
 
 var seriesList = [];
@@ -110,16 +138,8 @@ function createChart(ds) {
     const geo = ds.Dimension("geo");
     let myDateFormat = '%b \ %Y';
     seriesList = [];
-
-    $('#legend1').html('');
-    for (let x = 0; x < query.filter.geo.length; x++) {
-        if (geo.Category(x)) $('#legend1').append(`
-        <li>
-          <span style="background-color: ${colors[x]}"></span>
-          <strong>${geo.Category(x).label.includes('European Union') ? 'European Union' : geo.Category(x).label}</strong>
-        </li>`);
-    }
-    renderLegend2(ds);
+    renderCountryLengends(ds);
+    renderItemLegends(ds);
 
     for (let x = 0; x < query.filter.geo.length; x++) {
         for (let y = 0; y < query.filter.coicop.length; y++) {
@@ -141,7 +161,7 @@ function createChart(ds) {
     createSlider(JSON.parse(JSON.stringify(seriesList)))
     _.get(slider, 'noUiSlider') && slider.noUiSlider.set(existingSliderValues)
     if (hChart) {
-        for(let i = hChart.series.length - 1; i >= 0; i--) {
+        for (let i = hChart.series.length - 1; i >= 0; i--) {
             hChart.series[i].remove(false);
         }
         seriesList.forEach(s => hChart.addSeries(s));
