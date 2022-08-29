@@ -139,10 +139,12 @@ $('#itemSelect').add('#countries').change((e) => {
         deselectedCountry.forEach(x => {
             $(`#legend1 li[name="${x}"]`).remove()
             _.remove(countryLegends, { id: x })
+            _.remove(seriesList, (s) => s.id.includes(`[${x}]`))
         })
         deselectedItems.forEach(x => {
             $(`#legend2 li[name="${x}"]`).remove()
             _.remove(itemLegends, { id: x })
+            _.remove(seriesList, (s) => s.id.includes(`[${x}]`))
         })
     }
     if (selectedCountry.length) {
@@ -173,7 +175,6 @@ $('#itemSelect').add('#countries').change((e) => {
     query.filter.coicop = itemSelector.getSelectedIds() || [];
 })
 
-
 function appendSeries(ds, countries, items, trigger) {
     let geo = ds.Dimension('geo');
     let coicop = ds.Dimension('coicop');
@@ -183,16 +184,16 @@ function appendSeries(ds, countries, items, trigger) {
             if (geo.Category(x)) {
                 let existedCL = _.find(countryLegends, { id: ds.Dimension('geo').id[x] });
                 let existedIL = _.find(itemLegends, { id: ds.Dimension('coicop').id[y] });
-                color = existedCL ? existedCL.color :  _.difference(colors, countryLegends.map(x => x.color))[0]
+                color = existedCL ? existedCL.color : _.difference(colors, countryLegends.map(x => x.color))[0]
                 dashStyle = existedIL ? existedIL.dashType : _.difference(dashStyles.map(x => x[0]), itemLegends.map(x => x.dashType))[0]
-                if(trigger === 'country' && !_.find(countryLegends, {id: ds.Dimension('geo').id[x]})) {
+                if (trigger === 'country' && !_.find(countryLegends, { id: ds.Dimension('geo').id[x] })) {
                     countryLegends.push({
                         id: ds.Dimension('geo').id[x],
                         color,
                         label: ds.Dimension('geo').Category(x).label.includes('European Union') ? 'European Union' : ds.Dimension('geo').Category(x).label,
                     })
                 }
-                if(trigger === 'item' && !_.find(itemLegends, {id: ds.Dimension('coicop').id[y]})) {
+                if (trigger === 'item' && !_.find(itemLegends, { id: ds.Dimension('coicop').id[y] })) {
                     itemLegends.push({
                         id: ds.Dimension('coicop').id[y],
                         label: ds.Dimension('coicop').Category(y).label,
@@ -200,7 +201,7 @@ function appendSeries(ds, countries, items, trigger) {
                         dashSvg: _.find(dashStyles, x => x[0] === dashStyle)[1]
                     })
                 }
-                hChart.addSeries({
+                let sData = {
                     id: `[${countries[x]}]**[${items[y]}]`,
                     name: `${geo.Category(x).label.includes('European Union') ? 'European Union' : geo.Category(x).label} (${coicop.Category(y).label})`,
                     data: ds.Data({ geo: countries[x], coicop: items[y] }, false).map(
@@ -211,7 +212,9 @@ function appendSeries(ds, countries, items, trigger) {
                     ).filter(x => Boolean(x[1])),
                     dashStyle,
                     color,
-                })
+                };
+                hChart.addSeries(sData)
+                seriesList.push(sData)
             }
         }
     }
@@ -219,5 +222,5 @@ function appendSeries(ds, countries, items, trigger) {
     trigger === 'item' && renderItemLegends();
     addChartLengendHoverEffect(hChart);
     let existingSliderValues = _.get(slider, 'noUiSlider') && slider.noUiSlider.get().map(x => Number(x));
-    // updateSliderRange(chart, JSON.parse(JSON.stringify(seriesList)), existingSliderValues);
+    updateSliderRange(hChart, JSON.parse(JSON.stringify(seriesList)), existingSliderValues);
 }
