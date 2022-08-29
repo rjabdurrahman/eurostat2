@@ -133,9 +133,13 @@ $('#itemSelect').add('#countries').change((e) => {
     let deselectedCountry = _.difference(query.filter.geo, countrySelector.getSelectedIds());
     let selectedItems = _.difference(itemSelector.getSelectedIds(), query.filter.coicop);
     let deselectedItems = _.difference(query.filter.coicop, itemSelector.getSelectedIds());
+    console.log(deselectedCountry, deselectedItems)
     if (deselectedCountry.length || deselectedItems.length) {
         hChart.series
-            .filter(x => x.options.id.includes(`[${deselectedCountry[0]}]` || `[${deselectedItems[0]}]`))
+            .filter(x => {
+                if(deselectedCountry.length) return x.options.id.includes(`[${deselectedCountry[0]}]`);
+                if(deselectedItems.length) return x.options.id.includes(`[${deselectedItems[0]}]`);
+            })
             .forEach(s => s.remove())
         deselectedCountry.forEach(x => $(`#legend1 li[name="${x}"]`).remove())
         deselectedItems.forEach(x => $(`#legend2 li[name="${x}"]`).remove())
