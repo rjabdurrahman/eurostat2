@@ -1,26 +1,26 @@
-const dashTypes = [
-    'solid',
-    'longdash',
-    'dot',
-    'longdashdotdot',
-    'shortdash',
-    'longdashdot',
-    'shortdashdot',
-    'dash',
-    'shortdashdotdot',
-    'dashdot',
-    'shortdot',
-    'solid',
-    'longdash',
-    'dot',
-    'longdashdotdot',
-    'shortdash',
-    'longdashdot',
-    'shortdashdot',
-    'dash',
-    'shortdashdotdot',
-    'dashdot',
-    'shortdot',
+const dashStyles = [
+    ['solid', 'none'],
+    ['longdash', '16,6'],
+    ['dot', '2,6'],
+    ['longdashdotdot', '16,6,2,6,2,6'],
+    ['shortdash', '6,2'],
+    ['longdashdot', '16,6,2,6'],
+    ['shortdashdot', '2,2'],
+    ['dash', '8,6'],
+    ['shortdashdotdot', '6,2,2,2,2,2'],
+    ['dashdot', '8,6,2,6'],
+    ['shortdot', '2,2'],
+    ['solid', 'none'],
+    ['longdash', '16,6'],
+    ['dot', '2,6'],
+    ['longdashdotdot', '16,6,2,6,2,6'],
+    ['shortdash', '6,2'],
+    ['longdashdot', '16,6,2,6'],
+    ['shortdashdot', '2,2'],
+    ['dash', '8,6'],
+    ['shortdashdotdot', '6,2,2,2,2,2'],
+    ['dashdot', '8,6,2,6'],
+    ['shortdot', '2,2']
 ];
 const colors = [
     "#7cb5ec",
@@ -45,30 +45,6 @@ const colors = [
     "#91e8e1",
     "#7cb5ec",
 ];
-const dashSvg = [
-    'none',
-    '16,6',
-    '2,6',
-    '16,6,2,6,2,6',
-    '6,2',
-    '16,6,2,6',
-    '2,2',
-    '8,6',
-    '6,2,2,2,2,2',
-    '8,6,2,6',
-    '2,2',
-    'none',
-    '16,6',
-    '2,6',
-    '16,6,2,6,2,6',
-    '6,2',
-    '16,6,2,6',
-    '2,2',
-    '8,6',
-    '6,2,2,2,2,2',
-    '8,6,2,6',
-    '2,2'
-]
 let query = {
     dataset: "prc_hicp_midx",
     filter: {
@@ -77,8 +53,7 @@ let query = {
         coicop: [
             "CP01131",
             "CP01132"
-        ],
-        //lastTimePeriod: 5
+        ]
     }
 };
 
@@ -87,19 +62,14 @@ function dateMonthStrParser(str) {
     return [Number(year), month - 1, 1];
 }
 
-var countryLegends = [];
-var itemLegends = [];
+var countryLegends = [
+    {id: 'EU', color: '#7cb5ec', label: 'European Union'}
+];
+var itemLegends = [
+    {id: 'CP0111', label: 'Bread and cereals', dashType: 'solid', dashSvg: 'none'}
+];
 
-function renderCountryLengends(ds) {
-    let label;
-    for (let x = 0; x < ds.Dimension('geo').id.length; x++) {
-        label = ds.Dimension('geo').Category(x).label.includes('European Union') ? 'European Union' : ds.Dimension('geo').Category(x).label;
-        if (ds.Dimension('geo').Category(x) && !_.find(countryLegends, { label })) countryLegends.push({
-            id: ds.Dimension('geo').id[x],
-            color: _.find(countryLegends, { id: ds.Dimension('geo').id[x] })?.color || colors[countryLegends.length + x],
-            label,
-        })
-    }
+function renderCountryLengends() {
     $('#legend1').html(
         countryLegends.map(x => `<li name="${x.id}">
         <span style="background-color: ${x.color}"></span>
@@ -108,16 +78,7 @@ function renderCountryLengends(ds) {
     );
 }
 
-function renderItemLegends(ds) {
-    for (let y = 0; y < ds.Dimension('coicop').id.length; y++) {
-        let label = ds.Dimension('coicop').Category(y).label;
-        if (ds.Dimension('coicop').Category(y) && !_.find(itemLegends, { label })) itemLegends.push({
-            id: ds.Dimension('coicop').id[y],
-            label,
-            dashType: _.find(itemLegends, { id: ds.Dimension('coicop').id[y] })?.dashType || dashTypes[itemLegends.length + y],
-            dashSvg: _.find(itemLegends, { id: ds.Dimension('coicop').id[y] })?.dashSvg || dashSvg[itemLegends.length + y]
-        })
-    }
+function renderItemLegends() {
     $('#legend2').html(
         itemLegends.map(x => `<li name="${x.id}">
             <span>
@@ -151,7 +112,7 @@ function createChart(ds) {
                         val
                     ]
                 ).filter(x => Boolean(x[1])),
-                dashStyle: dashTypes[y],
+                dashStyle: dashStyles[y][0],
                 color: colors[x],
             })
         }
