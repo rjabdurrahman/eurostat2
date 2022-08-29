@@ -101,7 +101,7 @@ function renderCountryLengends(ds) {
         })
     }
     $('#legend1').html(
-        countryLegends.map(x => `<li>
+        countryLegends.map(x => `<li name="${x.id}">
         <span style="background-color: ${x.color}"></span>
         <strong>${x.label}</strong>
       </li>`).join('')
@@ -119,7 +119,7 @@ function renderItemLegends(ds) {
         })
     }
     $('#legend2').html(
-        itemLegends.map(x => `<li>
+        itemLegends.map(x => `<li name="${x.id}">
             <span>
             <svg height="10" width="60">
                 <path fill="none" d="M 5 5 L 60 5" stroke="#8085e9" stroke-width="2" stroke-dasharray="${x.dashSvg}"></path>
@@ -143,7 +143,7 @@ function createChart(ds) {
     for (let x = 0; x < query.filter.geo.length; x++) {
         for (let y = 0; y < query.filter.coicop.length; y++) {
             if (geo.Category(x)) seriesList.push({
-                id: `${query.filter.geo[x]}**${query.filter.coicop[y]}`,
+                id: `[${query.filter.geo[x]}]**[${query.filter.coicop[y]}]`,
                 name: `${geo.Category(x).label.includes('European Union') ? 'European Union' : geo.Category(x).label} (${ds.Dimension('coicop').Category(y).label})`,
                 data: ds.Data({ geo: query.filter.geo[x], coicop: query.filter.coicop[y] }, false).map(
                     (val, ix) => [

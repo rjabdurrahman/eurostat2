@@ -135,8 +135,10 @@ $('#itemSelect').add('#countries').change((e) => {
     let deselectedItems = _.difference(query.filter.coicop, itemSelector.getSelectedIds());
     if (deselectedCountry.length || deselectedItems.length) {
         hChart.series
-            .filter(x => x.options.id.includes(deselectedCountry[0] || deselectedItems[0]))
+            .filter(x => x.options.id.includes(`[${deselectedCountry[0]}]` || `[${deselectedItems[0]}]`))
             .forEach(s => s.remove())
+        deselectedCountry.forEach(x => $(`#legend1 li[name="${x}"]`).remove())
+        deselectedItems.forEach(x => $(`#legend2 li[name="${x}"]`).remove())
     }
     if (selectedCountry.length) {
         EuroJSONstat.fetchDataset({
@@ -174,7 +176,7 @@ function appendSeries(ds, countries, items, trigger) {
     for (let x = 0; x < countries.length; x++) {
         for (let y = 0; y < items.length; y++) {
             if (geo.Category(x)) hChart.addSeries({
-                id: `${countries[x]}**${items[y]}`,
+                id: `[${countries[x]}]**[${items[y]}]`,
                 name: `${geo.Category(x).label.includes('European Union') ? 'European Union' : geo.Category(x).label} (${coicop.Category(y).label})`,
                 data: ds.Data({ geo: countries[x], coicop: items[y] }, false).map(
                     (val, ix) => [
