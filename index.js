@@ -225,7 +225,4 @@ function appendSeries(ds, countries, items, trigger) {
     trigger === 'country' && renderCountryLengends();
     trigger === 'item' && renderItemLegends();
     addChartLengendHoverEffect(hChart);
-    let existingSliderValues = _.get(slider, 'noUiSlider') && slider.noUiSlider.get().map(x => Number(x));
-    console.log(hChart.series.map(x => x.options.id), seriesList.map(x => x.id))
-    // updateSliderRange(hChart, existingSliderValues);
 }

@@ -29,27 +29,10 @@ function updateSliderRange(chart, existingValues) {
             + ' '
             + new Date(Number(values[1])).getFullYear()
         )
-        console.log('Here')
-        if (existingValues && existingValues.length) {
-            let newSeries = JSON.parse(JSON.stringify(seriesList))
-            // console.log(chart.series.map(x => x.options.id))
-            for (let idx in newSeries) {
-                chart.series[idx].update({
-                    data: newSeries[idx].data.filter(x => x[0] >= existingValues[0] && x[0] <= existingValues[1])
-                }, false)
-            }
-            chart.redraw();
-        }
     })
-
+    
     slider.noUiSlider.on('change', function (values, handle) {
-        let newSeries = JSON.parse(JSON.stringify(seriesList))
-        for (let idx in newSeries) {
-            chart.series[idx].update({
-                data: newSeries[idx].data.filter(x => x[0] >= Number(values[0]) && x[0] <= Number(values[1]))
-            }, false)
-        }
-        chart.redraw(false);
+        chart.xAxis[0].setExtremes(...values.map(x => Number(x)));
     });
 }
 $('#slider').width(
